@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ToDoList.MainPage">
@@ -8,7 +8,7 @@
 
             <VerticalStackLayout  Padding="25,0" Spacing= "15">
                 <Entry Placeholder="Enter Task" Text="{Binding Task}"/>
-                <Button Text="Save" Command="{Binding AddTask}" WidthRequest="100" HorizontalOptions="Start"/>
+                <Button Text="Save" Command="{Binding AddTask}" CommandParameter ="{Binding Task}"  WidthRequest="100" HorizontalOptions="Start"/>
             </VerticalStackLayout>
 
             <ListView x:Name="ToDoListView" ItemsSource="{Binding ToDoList}" >
@@ -16,9 +16,9 @@
                     <DataTemplate>
                         <ViewCell>
                             <VerticalStackLayout Padding="30,0" Spacing= "15" Margin="15">
-                                <Label Text="{Binding Task}" FontSize="14" TextColor="White" TextDecorations="{Binding Source={x:Reference Name=ToDoListView}, Path=BindingContext.TextDecorations}"/>
+                                <Label Text="{Binding Task}" FontSize="14" TextColor="White" TextDecorations="{Binding TextDecorations}"/>
                                 <HorizontalStackLayout Spacing= "15">
-                                    <CheckBox IsChecked="{Binding Source={x:Reference Name=ToDoListView}, Path=BindingContext.Complete}"/>
+                                    <CheckBox IsChecked="{Binding Complete}" />
                                     <Button Text="Remove" Command="{Binding Source={x:Reference Name=ToDoListView}, Path=BindingContext.RemoveTask}" WidthRequest="100" HorizontalOptions="End" CommandParameter="{Binding}"/>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
