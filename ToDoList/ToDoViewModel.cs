@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,13 +11,33 @@ using System.Windows.Input;
 
 namespace ToDoList
 {
-    public class ToDo
+    public class ToDo : INotifyPropertyChanged
     {
-        public bool Complete { get; set; } 
-         
+        private bool complete = false;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
         public string Task { get; set; }
         public ToDo(string task, bool complete) { Task = task; Complete = complete; }
 
+        public bool Complete
+        {
+            get => complete;
+            set
+            {
+                if (complete != value)
+                {
+                    complete = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TextDecorations));
+                }
+            }
+        }
+
+        public TextDecorations TextDecorations => Complete ? TextDecorations.Strikethrough : TextDecorations.None;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
     }
 
     public class ToDoViewModel : INotifyPropertyChanged
@@ -33,15 +53,16 @@ namespace ToDoList
 
         public ToDoViewModel()
         {
-            AddTask = new Command(() =>
+            AddTask = new Command<string>((task) =>
             {
+                complete = false;
                 if (!string.IsNullOrWhiteSpace(Task))
                 {
-                    ToDoList.Add(new ToDo(Task, false));
+                    ToDoList.Add(new ToDo(Task, complete));
                     Task = "";
                 }
             },
-            () => !string.IsNullOrWhiteSpace(Task));
+            (task) => !string.IsNullOrWhiteSpace(task));
 
             RemoveTask = new Command<ToDo>((ToDo todo) =>
             {
@@ -62,8 +83,6 @@ namespace ToDoList
             }
         }
 
-
-
         public bool Complete
         {
             get => complete;
@@ -73,12 +92,11 @@ namespace ToDoList
                 {
                     complete = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(TextDecorations));
                 }
             }
         }
-
         public TextDecorations TextDecorations => Complete ? TextDecorations.Strikethrough : TextDecorations.None;
+
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
